@@ -37,3 +37,24 @@
       dest: /home/acke/.bashrc
       owner: acke
       group: acke
+
+  - name: add ansible user
+    user:
+      name: velociraptor
+      system: yes
+
+  - name: set up sudo for ansible user
+    copy:
+      src: files/sudoer_velociraptor
+      dest: /etc/sudoers.d/velociraptor
+      owner: root
+      group: root
+      mode: 0440
+
+  - name: add ansible-pull cron job
+    cron:
+      name: ansible auto-provision
+      user: velociraptor
+      minute: "*/10"
+      # Run this crontab job only if it has been changes -o
+      job: ansible-pull -o -U https://github.com/anst9000/ansible-desktop.git
